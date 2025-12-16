@@ -106,6 +106,13 @@ def home_page():
     - **Blight** → Penyakit hawar yang menyebabkan daun mengering  
     """)
 
+    st.subheader("Tujuan")
+    st.markdown("""
+    Mengembangkan sistem deteksi penyakit daun jagung yang **akurat,
+    cepat, dan efisien** untuk membantu petani meminimalisir risiko
+    gagal panen.
+    """)
+
 # =======================
 # HALAMAN KAMERA (KAMERA + UPLOAD)
 # =======================
@@ -174,13 +181,6 @@ def about_page():
     **Anggota**
     - Iqbal Hidayatullah  
     - M Tegar Yusuf Habibi
-    """)
-
-    st.subheader("Tujuan")
-    st.markdown("""
-    Mengembangkan sistem deteksi penyakit daun jagung yang **akurat,
-    cepat, dan efisien** untuk membantu petani meminimalisir risiko
-    gagal panen.
     """)
 
 # =======================
