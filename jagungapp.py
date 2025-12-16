@@ -100,10 +100,10 @@ def home_page():
     3. Lihat hasil prediksi dan cara penanggulangan
 
     ### Kategori Penyakit
-    - **Healthy** (Sehat)
-    - **Common Rust**
-    - **Gray Leaf Spot**
-    - **Blight**
+    - **Healthy -> Daun dalam kondisi sehat tanpa gejala penyakit.** 
+    - **Common Rust -> Penyakit jamur dengan bercak coklat kemerahan**
+    - **Gray Leaf Spot -> Bercak abu-abu memanjang akibat jamur.**
+    - **Blight -> Penyakit hawar yang menyebabkan daun mengering.**
     """)
 
 # =======================
