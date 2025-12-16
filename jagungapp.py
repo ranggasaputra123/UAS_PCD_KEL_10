@@ -177,4 +177,5 @@ with tabs[0]:
 with tabs[1]:
     camera_page()
 
-with tabs[2]()
+with tabs[2]:
+    about_page()
