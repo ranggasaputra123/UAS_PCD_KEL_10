@@ -122,15 +122,20 @@ def camera_page():
 def example_page():
     st.title("Contoh Penyakit Daun Jagung")
 
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2, gap="small")
 
     with col1:
-        st.image("Corn_Health (82).jpg", caption="Healthy", width=300)
-        st.image("Corn_Common_Rust (2).jpg", caption="Common Rust", width=300)
+        st.markdown('<div class="image-grid">', unsafe_allow_html=True)
+        st.image("Corn_Health (82).jpg", caption="Healthy", use_container_width=True)
+        st.image("Corn_Common_Rust (2).jpg", caption="Common Rust", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     with col2:
-        st.image("Corn_Gray_Spot (3).jpg", caption="Gray Leaf Spot", width=300)
-        st.image("Corn_Blight (1).jpeg", caption="Blight", width=300)
+        st.markdown('<div class="image-grid">', unsafe_allow_html=True)
+        st.image("Corn_Gray_Spot (3).jpg", caption="Gray Leaf Spot", use_container_width=True)
+        st.image("Corn_Blight (1).jpeg", caption="Blight", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
 
 # =======================
 # HALAMAN TENTANG
