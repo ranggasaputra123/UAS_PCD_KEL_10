@@ -125,12 +125,12 @@ def example_page():
     col1, col2 = st.columns(2)
 
     with col1:
-        st.image("Corn_Health (82).jpg", caption="Healthy")
-        st.image("Corn_Common_Rust (2).jpg", caption="Common Rust")
+        st.image("Corn_Health (82).jpg", caption="Healthy", width=300)
+        st.image("Corn_Common_Rust (2).jpg", caption="Common Rust", width=300)
 
     with col2:
-        st.image("Corn_Gray_Spot (3).jpg", caption="Gray Leaf Spot")
-        st.image("Corn_Blight (1).jpeg", caption="Blight")
+        st.image("Corn_Gray_Spot (3).jpg", caption="Gray Leaf Spot", width=300)
+        st.image("Corn_Blight (1).jpeg", caption="Blight", width=300)
 
 # =======================
 # HALAMAN TENTANG
