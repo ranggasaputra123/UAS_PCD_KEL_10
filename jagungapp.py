@@ -4,127 +4,148 @@ import tensorflow as tf
 from PIL import Image
 import os
 
-# Path ke model
-MODEL_PATH = 'JAGUNG/model_jagung.h5'
+# =======================
+# KONFIGURASI HALAMAN
+# =======================
+st.set_page_config(
+    page_title="Deteksi Penyakit Daun Jagung",
+    page_icon="🌽",
+    layout="wide"
+)
 
-# Cek apakah model tersedia
+# =======================
+# LOAD MODEL
+# =======================
+MODEL_PATH = "JAGUNG/model_jagung.h5"
+
 model = None
 if not os.path.exists(MODEL_PATH):
-    st.error(f"Model tidak ditemukan di {MODEL_PATH}. Pastikan model tersedia di lokasi yang benar.")
+    st.error(f"Model tidak ditemukan di {MODEL_PATH}")
 else:
     try:
         model = tf.keras.models.load_model(MODEL_PATH, compile=False)
-        st.sidebar.success("Model berhasil dimuat.")
+        st.success("Model berhasil dimuat")
     except Exception as e:
         st.error(f"Gagal memuat model: {e}")
 
-# Kelas penyakit daun jagung
-CLASSES = ['Healthy', 'Common Rust', 'Gray Leaf Spot', 'Blight']
+# =======================
+# KELAS PENYAKIT
+# =======================
+CLASSES = ["Healthy", "Common Rust", "Gray Leaf Spot", "Blight"]
 
-# Fungsi untuk memproses gambar input
+# =======================
+# FUNGSI PREPROCESS
+# =======================
 def preprocess_image(img):
-    """Memproses gambar untuk prediksi."""
     try:
-        img = img.resize((224, 224))  # Ubah ukuran sesuai model
-        img_array = np.array(img) / 255.0  # Normalisasi gambar
-        img_array = np.expand_dims(img_array, axis=0)  # Tambahkan batch dimension
+        img = img.convert("RGB")
+        img = img.resize((224, 224))
+        img_array = np.array(img) / 255.0
+        img_array = np.expand_dims(img_array, axis=0)
         return img_array
     except Exception as e:
-        st.error(f"Error saat memproses gambar: {e}")
+        st.error(f"Error preprocessing gambar: {e}")
         return None
 
-# Fungsi untuk prediksi
+# =======================
+# FUNGSI PREDIKSI
+# =======================
 def predict_image(img_array):
-    """Melakukan prediksi pada gambar input."""
     try:
         preds = model.predict(img_array)
-        class_idx = np.argmax(preds, axis=1)
-        return CLASSES[class_idx[0]], preds[0][class_idx[0]]
+        class_idx = np.argmax(preds, axis=1)[0]
+        confidence = preds[0][class_idx]
+        return CLASSES[class_idx], confidence
     except Exception as e:
-        st.error(f"Error saat memprediksi gambar: {e}")
+        st.error(f"Error prediksi: {e}")
         return None, None
 
-# Fungsi halaman Home
+# =======================
+# HALAMAN HOME
+# =======================
 def home_page():
-    st.title("Selamat Datang di Aplikasi Deteksi Penyakit Daun Jagung")
-    st.write("""
-    Aplikasi ini digunakan untuk mendeteksi penyakit pada daun jagung menggunakan gambar yang diambil melalui kamera.
-    
-    *Cara Penggunaan:*
-    1. Navigasikan ke halaman *Kamera* melalui sidebar.
-    2. Ambil gambar daun jagung menggunakan kamera.
-    3. Lihat hasil prediksi dan probabilitas.
-    
-    *Kategori Penyakit yang Didukung:*
-    - Healthy (Sehat)
-    - Common Rust (Penyakit karat)
-    - Gray Leaf Spot (Penyakit bercak daun abu-abu)
-    - Blight (Hawar daun)
+    st.title("🌽 Aplikasi Deteksi Penyakit Daun Jagung")
+    st.markdown("""
+    Aplikasi ini digunakan untuk mendeteksi **penyakit pada daun jagung**
+    menggunakan **kecerdasan buatan (AI)** berbasis *Deep Learning*.
+
+    ### 📌 Cara Penggunaan
+    1. Buka tab **Kamera**
+    2. Ambil foto daun jagung
+    3. Lihat hasil prediksi penyakit
+
+    ### 🦠 Kategori Penyakit
+    - **Healthy** (Sehat)
+    - **Common Rust**
+    - **Gray Leaf Spot**
+    - **Blight**
     """)
 
-# Fungsi halaman Kamera
+# =======================
+# HALAMAN KAMERA
+# =======================
 def camera_page():
-    st.title("Deteksi Penyakit Daun Jagung Melalui Kamera")
+    st.title("📷 Deteksi Penyakit Melalui Kamera")
 
-    # Validasi jika model belum dimuat
     if model is None:
-        st.error("Model belum dimuat. Silakan pastikan model tersedia di path yang benar.")
+        st.error("Model belum dimuat.")
         return
 
-    # Input kamera
-    camera_input = st.camera_input("Silakan ambil gambar daun jagung menggunakan kamera di bawah ini:")
+    camera_input = st.camera_input("Ambil gambar daun jagung")
 
     if camera_input is not None:
-        try:
-            # Tampilkan gambar yang diambil
-            st.image(camera_input, caption="Gambar yang Diambil", use_container_width=True)
+        st.image(camera_input, caption="Gambar Daun Jagung", use_container_width=True)
 
-            # Proses dan prediksi gambar
-            img = Image.open(camera_input)
-            img_array = preprocess_image(img)
+        img = Image.open(camera_input)
+        img_array = preprocess_image(img)
 
-            if img_array is not None:
-                label, confidence = predict_image(img_array)
-                if label and confidence is not None:
-                    st.subheader("Hasil Prediksi:")
-                    st.write(f"*Kategori:* {label}")
-                    st.write(f"*Probabilitas:* {confidence:.2f}")
-        except Exception as e:
-            st.error(f"Error saat memproses gambar: {e}")
+        if img_array is not None:
+            label, confidence = predict_image(img_array)
 
-# Fungsi halaman Tentang Aplikasi
+            if label:
+                st.subheader("🔍 Hasil Prediksi")
+                st.success(f"Kategori: **{label}**")
+                st.write(f"Probabilitas: **{confidence:.2%}**")
+
+# =======================
+# HALAMAN TENTANG
+# =======================
 def about_page():
-    st.title("Tentang Aplikasi Deteksi Penyakit Daun Jagung")
-    st.write("""
-    *Deteksi Penyakit Daun Jagung* adalah aplikasi yang menggunakan teknologi kecerdasan buatan (AI) untuk mendeteksi penyakit pada daun jagung. 
-    Aplikasi ini bekerja dengan cara memproses gambar daun jagung yang diambil melalui kamera dan memprediksi kategori penyakitnya.
+    st.title("ℹ️ Tentang Aplikasi")
+
+    st.markdown("""
+    Aplikasi **Deteksi Penyakit Daun Jagung** memanfaatkan teknologi
+    *Convolutional Neural Network (CNN)* untuk mengklasifikasikan
+    kondisi daun jagung secara otomatis dari citra kamera.
     """)
 
-    st.header("Kelompok 10")
-    st.write("""
-    *Ketua Kelompok:*
-    1. M Rangga Saputra
-    
-    *Anggota Kelompok:*
-    
-    2. Iqbal Hidayatullah
-    3. M Tegar Yusuf Habibi  
+    st.header("👥 Kelompok 10")
+    st.markdown("""
+    **Ketua Kelompok**
+    - M Rangga Saputra
+
+    **Anggota**
+    - Iqbal Hidayatullah  
+    - M Tegar Yusuf Habibi
     """)
 
-    st.subheader("Tujuan Aplikasi")
-    st.write("""
-    Aplikasi ini bertujuan untuk klasifikasi penyakit daun jagung ini untuk mengembangkan sistem yang dapat mendeteksi penyakit daun jagung dengan akurat dan efisien 
-    sehingga kerusakan dapat diidentifikasi lebih cepat, dan meminimalisir tingkat gagal panen.
+    st.subheader("🎯 Tujuan")
+    st.markdown("""
+    Mengembangkan sistem deteksi penyakit daun jagung yang **akurat,
+    cepat, dan efisien** untuk membantu petani meminimalisir risiko
+    gagal panen.
     """)
 
-# Sidebar Navigasi
-st.sidebar.title("Navigasi")
-page = st.sidebar.radio("Pilih Halaman:", ["Home", "Kamera", "Tentang Aplikasi"])
+# =======================
+# TOPBAR NAVIGATION
+# =======================
+tabs = st.tabs(["🏠 Home", "📷 Kamera", "ℹ️ Tentang Aplikasi"])
 
-# Render halaman sesuai pilihan
-if page == "Home":
+with tabs[0]:
     home_page()
-elif page == "Kamera":
+
+with tabs[1]:
     camera_page()
-elif page == "Tentang Aplikasi":
+
+with tabs[2]:
     about_page()
