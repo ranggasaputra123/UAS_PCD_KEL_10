@@ -9,7 +9,6 @@ import os
 # =======================
 st.set_page_config(
     page_title="Deteksi Penyakit Daun Jagung",
-    page_icon="🌽",
     layout="wide"
 )
 
@@ -64,17 +63,17 @@ def predict_image(img_array):
 # HALAMAN HOME
 # =======================
 def home_page():
-    st.title("🌽 Aplikasi Deteksi Penyakit Daun Jagung")
+    st.title("Aplikasi Deteksi Penyakit Daun Jagung")
     st.markdown("""
     Aplikasi ini digunakan untuk mendeteksi **penyakit pada daun jagung**
     menggunakan **kecerdasan buatan (AI)** berbasis *Deep Learning*.
 
-    ### 📌 Cara Penggunaan
+    ### Cara Penggunaan
     1. Buka tab **Kamera**
     2. Ambil foto daun jagung
     3. Lihat hasil prediksi penyakit
 
-    ### 🦠 Kategori Penyakit
+    ### Kategori Penyakit
     - **Healthy** (Sehat)
     - **Common Rust**
     - **Gray Leaf Spot**
@@ -111,7 +110,7 @@ def camera_page():
 # HALAMAN TENTANG
 # =======================
 def about_page():
-    st.title("ℹ️ Tentang Aplikasi")
+    st.title("Tentang Aplikasi")
 
     st.markdown("""
     Aplikasi **Deteksi Penyakit Daun Jagung** memanfaatkan teknologi
@@ -119,7 +118,7 @@ def about_page():
     kondisi daun jagung secara otomatis dari citra kamera.
     """)
 
-    st.header("👥 Kelompok 10")
+    st.header("Kelompok 10")
     st.markdown("""
     **Ketua Kelompok**
     - M Rangga Saputra
@@ -129,7 +128,7 @@ def about_page():
     - M Tegar Yusuf Habibi
     """)
 
-    st.subheader("🎯 Tujuan")
+    st.subheader("Tujuan")
     st.markdown("""
     Mengembangkan sistem deteksi penyakit daun jagung yang **akurat,
     cepat, dan efisien** untuk membantu petani meminimalisir risiko
@@ -139,7 +138,7 @@ def about_page():
 # =======================
 # TOPBAR NAVIGATION
 # =======================
-tabs = st.tabs(["🏠 Home", "📷 Kamera", "ℹ️ Tentang Aplikasi"])
+tabs = st.tabs(["Home", "Kamera", "Tentang Aplikasi"])
 
 with tabs[0]:
     home_page()
