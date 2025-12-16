@@ -96,36 +96,53 @@ def home_page():
 
     ### Cara Penggunaan
     1. Buka tab **Kamera**
-    2. Ambil gambar daun jagung
+    2. Ambil gambar atau upload gambar daun jagung
     3. Lihat hasil prediksi dan cara penanggulangan
 
     ### Kategori Penyakit
-    - **Healthy -> Daun dalam kondisi sehat tanpa gejala penyakit.** 
-    - **Common Rust -> Penyakit jamur dengan bercak coklat kemerahan**
-    - **Gray Leaf Spot -> Bercak abu-abu memanjang akibat jamur.**
-    - **Blight -> Penyakit hawar yang menyebabkan daun mengering.**
+    - **Healthy** → Daun dalam kondisi sehat tanpa gejala penyakit  
+    - **Common Rust** → Penyakit jamur dengan bercak coklat kemerahan  
+    - **Gray Leaf Spot** → Bercak abu-abu memanjang akibat jamur  
+    - **Blight** → Penyakit hawar yang menyebabkan daun mengering  
     """)
 
 # =======================
-# HALAMAN KAMERA
+# HALAMAN KAMERA (KAMERA + UPLOAD)
 # =======================
 def camera_page():
-    st.title("Deteksi Penyakit Melalui Kamera")
+    st.title("Deteksi Penyakit Melalui Kamera / Upload Gambar")
 
     if model is None:
         st.error("Model belum dimuat.")
         return
 
-    camera_input = st.camera_input("Ambil gambar daun jagung")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        camera_input = st.camera_input("Ambil gambar daun jagung")
+
+    with col2:
+        uploaded_file = st.file_uploader(
+            "Atau unggah gambar daun jagung",
+            type=["jpg", "jpeg", "png"]
+        )
+
+    image_source = None
 
     if camera_input is not None:
-        st.image(camera_input, caption="Gambar Daun Jagung", use_container_width=True)
+        image_source = camera_input
+    elif uploaded_file is not None:
+        image_source = uploaded_file
 
-        img = Image.open(camera_input)
+    if image_source is not None:
+        st.image(image_source, caption="Gambar Daun Jagung", use_container_width=True)
+
+        img = Image.open(image_source)
         img_array = preprocess_image(img)
 
         if img_array is not None:
-            label, confidence = predict_image(img_array)
+            with st.spinner("Sedang memproses gambar..."):
+                label, confidence = predict_image(img_array)
 
             if label:
                 st.subheader("Hasil Prediksi")
