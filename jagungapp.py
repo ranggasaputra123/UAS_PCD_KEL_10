@@ -5,7 +5,7 @@ from PIL import Image
 import os
 
 # Path ke model
-MODEL_PATH = 'JAGUNG/Dataset/model_jagung.h5'
+MODEL_PATH = 'JAGUNG/model_jagung.h5'
 
 # Cek apakah model tersedia
 model = None
