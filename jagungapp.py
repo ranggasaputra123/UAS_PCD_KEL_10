@@ -8,7 +8,7 @@ import os
 # KONFIGURASI HALAMAN
 # =======================
 st.set_page_config(
-    page_title="Deteksi",
+    page_title="Deteksi Penyakit Jagung",
     layout="wide"
 )
 
@@ -19,42 +19,35 @@ MODEL_PATH = "JAGUNG/model_jagung.h5"
 
 model = None
 if not os.path.exists(MODEL_PATH):
-    st.error(f"Model tidak ditemukan di {MODEL_PATH}")
+    st.error("Model tidak ditemukan")
 else:
-    try:
-        model = tf.keras.models.load_model(MODEL_PATH, compile=False)
-        st.success("Model berhasil dimuat")
-    except Exception as e:
-        st.error(f"Gagal memuat model: {e}")
+    model = tf.keras.models.load_model(MODEL_PATH, compile=False)
 
 # =======================
-# KELAS PENYAKIT
+# KELAS & PENANGGULANGAN
 # =======================
 CLASSES = ["Healthy", "Common Rust", "Gray Leaf Spot", "Blight"]
 
-# =======================
-# DATA PENANGGULANGAN
-# =======================
 TREATMENTS = {
     "Healthy": [
-        "Lanjutkan perawatan tanaman secara rutin.",
-        "Gunakan pupuk berimbang.",
-        "Pastikan sistem drainase lahan baik."
+        "Lanjutkan perawatan tanaman secara rutin",
+        "Gunakan pupuk berimbang",
+        "Pastikan drainase lahan baik"
     ],
     "Common Rust": [
-        "Gunakan fungisida berbahan aktif mankozeb atau propikonazol.",
-        "Buang dan musnahkan daun yang terinfeksi berat.",
-        "Lakukan rotasi tanaman."
+        "Gunakan fungisida mankozeb / propikonazol",
+        "Buang daun terinfeksi berat",
+        "Lakukan rotasi tanaman"
     ],
     "Gray Leaf Spot": [
-        "Semprot fungisida sistemik sesuai dosis anjuran.",
-        "Atur jarak tanam agar sirkulasi udara baik.",
-        "Gunakan varietas jagung tahan penyakit."
+        "Gunakan fungisida sistemik",
+        "Atur jarak tanam",
+        "Gunakan varietas tahan penyakit"
     ],
     "Blight": [
-        "Gunakan fungisida berbahan aktif klorotalonil.",
-        "Hindari penyiraman berlebih.",
-        "Bersihkan sisa tanaman yang terinfeksi dari lahan."
+        "Gunakan fungisida klorotalonil",
+        "Hindari kelembaban berlebih",
+        "Bersihkan sisa tanaman terinfeksi"
     ]
 }
 
@@ -62,28 +55,18 @@ TREATMENTS = {
 # FUNGSI PREPROCESS
 # =======================
 def preprocess_image(img):
-    try:
-        img = img.convert("RGB")
-        img = img.resize((224, 224))
-        img_array = np.array(img) / 255.0
-        img_array = np.expand_dims(img_array, axis=0)
-        return img_array
-    except Exception as e:
-        st.error(f"Error preprocessing gambar: {e}")
-        return None
+    img = img.convert("RGB")
+    img = img.resize((224, 224))
+    img = np.array(img) / 255.0
+    return np.expand_dims(img, axis=0)
 
 # =======================
 # FUNGSI PREDIKSI
 # =======================
 def predict_image(img_array):
-    try:
-        preds = model.predict(img_array)
-        class_idx = np.argmax(preds, axis=1)[0]
-        confidence = preds[0][class_idx]
-        return CLASSES[class_idx], confidence
-    except Exception as e:
-        st.error(f"Error prediksi: {e}")
-        return None, None
+    preds = model.predict(img_array)
+    idx = np.argmax(preds)
+    return CLASSES[idx], preds[0][idx]
 
 # =======================
 # HALAMAN HOME
@@ -91,75 +74,63 @@ def predict_image(img_array):
 def home_page():
     st.title("Aplikasi Deteksi Penyakit Daun Jagung")
     st.markdown("""
-    Aplikasi ini digunakan untuk mendeteksi **penyakit pada daun jagung**
-    menggunakan teknologi **kecerdasan buatan (AI)** berbasis *Deep Learning*.
+    Aplikasi ini menggunakan **Deep Learning (CNN)**  
+    untuk mendeteksi penyakit daun jagung dari gambar.
 
     ### Cara Penggunaan
     1. Buka tab **Kamera**
-    2. Ambil gambar atau upload gambar daun jagung
-    3. Lihat hasil prediksi dan cara penanggulangan
-
-    ### Kategori Penyakit
-    - **Healthy** → Daun dalam kondisi sehat tanpa gejala penyakit  
-    - **Common Rust** → Penyakit jamur dengan bercak coklat kemerahan  
-    - **Gray Leaf Spot** → Bercak abu-abu memanjang akibat jamur  
-    - **Blight** → Penyakit hawar yang menyebabkan daun mengering  
-    """)
-
-    st.subheader("Tujuan")
-    st.markdown("""
-    Mengembangkan sistem deteksi penyakit daun jagung yang **akurat,
-    cepat, dan efisien** untuk membantu petani meminimalisir risiko
-    gagal panen.
+    2. Ambil gambar atau upload foto
+    3. Lihat hasil prediksi & penanggulangan
     """)
 
 # =======================
-# HALAMAN KAMERA (KAMERA + UPLOAD)
+# HALAMAN KAMERA
 # =======================
 def camera_page():
-    st.title("Deteksi Penyakit Melalui Kamera / Upload Gambar")
+    st.title("Deteksi Penyakit")
 
-    if model is None:
-        st.error("Model belum dimuat.")
-        return
+    option = st.radio("Pilih metode input gambar:", ["Kamera", "Upload Gambar"])
+
+    image = None
+
+    if option == "Kamera":
+        cam = st.camera_input("Ambil gambar daun jagung")
+        if cam:
+            image = Image.open(cam)
+
+    else:
+        upload = st.file_uploader("Upload gambar daun jagung", type=["jpg", "jpeg", "png"])
+        if upload:
+            image = Image.open(upload)
+
+    if image:
+        st.image(image, caption="Gambar Input", use_container_width=True)
+        img_array = preprocess_image(image)
+        label, conf = predict_image(img_array)
+
+        st.subheader("Hasil Prediksi")
+        st.success(f"Kategori: **{label}**")
+        st.write(f"Probabilitas: **{conf:.2%}**")
+
+        st.subheader("Cara Penanggulangan")
+        for i, step in enumerate(TREATMENTS[label], 1):
+            st.write(f"{i}. {step}")
+
+# =======================
+# HALAMAN CONTOH PENYAKIT
+# =======================
+def example_page():
+    st.title("Contoh Penyakit Daun Jagung")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        camera_input = st.camera_input("Ambil gambar daun jagung")
+        st.image("Corn_Health (82).jpg", caption="Healthy")
+        st.image("Corn_Common_Rust (2).jpg", caption="Common Rust")
 
     with col2:
-        uploaded_file = st.file_uploader(
-            "Atau unggah gambar daun jagung",
-            type=["jpg", "jpeg", "png"]
-        )
-
-    image_source = None
-
-    if camera_input is not None:
-        image_source = camera_input
-    elif uploaded_file is not None:
-        image_source = uploaded_file
-
-    if image_source is not None:
-        st.image(image_source, caption="Gambar Daun Jagung", use_container_width=True)
-
-        img = Image.open(image_source)
-        img_array = preprocess_image(img)
-
-        if img_array is not None:
-            with st.spinner("Sedang memproses gambar..."):
-                label, confidence = predict_image(img_array)
-
-            if label:
-                st.subheader("Hasil Prediksi")
-                st.success(f"Kategori: **{label}**")
-                st.write(f"Probabilitas: **{confidence:.2%}**")
-
-                st.subheader("Cara Penanggulangan")
-                with st.expander("Klik untuk melihat penanggulangan"):
-                    for i, step in enumerate(TREATMENTS[label], 1):
-                        st.write(f"{i}. {step}")
+        st.image("Corn_Gray_Spot (3).jpg", caption="Gray Leaf Spot")
+        st.image("Corn_Blight (1).jpeg", caption="Blight")
 
 # =======================
 # HALAMAN TENTANG
@@ -168,14 +139,11 @@ def about_page():
     st.title("Tentang Aplikasi")
 
     st.markdown("""
-    Aplikasi **Deteksi Penyakit Daun Jagung** memanfaatkan teknologi
-    *Convolutional Neural Network (CNN)* untuk mengklasifikasikan
-    kondisi daun jagung secara otomatis melalui citra kamera.
-    """)
+    Aplikasi ini dikembangkan untuk membantu  
+    **deteksi dini penyakit daun jagung**.
 
-    st.header("Kelompok 10")
-    st.markdown("""
-    **Ketua Kelompok**
+    ### Kelompok 10
+    **Ketua**
     - M Rangga Saputra
 
     **Anggota**
@@ -186,7 +154,7 @@ def about_page():
 # =======================
 # TOPBAR NAVIGATION
 # =======================
-tabs = st.tabs(["Home", "Kamera", "Tentang Aplikasi"])
+tabs = st.tabs(["Home", "Kamera", "Contoh Penyakit", "Tentang"])
 
 with tabs[0]:
     home_page()
@@ -195,4 +163,7 @@ with tabs[1]:
     camera_page()
 
 with tabs[2]:
+    example_page()
+
+with tabs[3]:
     about_page()
