@@ -8,7 +8,7 @@ import os
 # KONFIGURASI HALAMAN
 # =======================
 st.set_page_config(
-    page_title="Deteksi Penyakit Daun Jagung",
+    page_title="Deteksi",
     layout="wide"
 )
 
@@ -84,7 +84,7 @@ def home_page():
 # HALAMAN KAMERA
 # =======================
 def camera_page():
-    st.title("📷 Deteksi Penyakit Melalui Kamera")
+    st.title("Deteksi Penyakit Melalui Kamera")
 
     if model is None:
         st.error("Model belum dimuat.")
@@ -102,7 +102,7 @@ def camera_page():
             label, confidence = predict_image(img_array)
 
             if label:
-                st.subheader("🔍 Hasil Prediksi")
+                st.subheader("Hasil Prediksi")
                 st.success(f"Kategori: **{label}**")
                 st.write(f"Probabilitas: **{confidence:.2%}**")
 
