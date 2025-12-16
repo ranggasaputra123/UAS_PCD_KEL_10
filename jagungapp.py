@@ -8,8 +8,7 @@ import os
 # KONFIGURASI HALAMAN
 # =======================
 st.set_page_config(
-    page_title="Deteksi",
-    layout="wide"
+    page_title="Deteksi"
 )
 
 # =======================
