@@ -8,7 +8,8 @@ import os
 # KONFIGURASI HALAMAN
 # =======================
 st.set_page_config(
-    page_title="Deteksi"
+    page_title="Deteksi",
+    layout="wide"
 )
 
 # =======================
@@ -30,6 +31,32 @@ else:
 # KELAS PENYAKIT
 # =======================
 CLASSES = ["Healthy", "Common Rust", "Gray Leaf Spot", "Blight"]
+
+# =======================
+# DATA PENANGGULANGAN
+# =======================
+TREATMENTS = {
+    "Healthy": [
+        "Lanjutkan perawatan tanaman secara rutin.",
+        "Gunakan pupuk berimbang.",
+        "Pastikan sistem drainase lahan baik."
+    ],
+    "Common Rust": [
+        "Gunakan fungisida berbahan aktif mankozeb atau propikonazol.",
+        "Buang dan musnahkan daun yang terinfeksi berat.",
+        "Lakukan rotasi tanaman."
+    ],
+    "Gray Leaf Spot": [
+        "Semprot fungisida sistemik sesuai dosis anjuran.",
+        "Atur jarak tanam agar sirkulasi udara baik.",
+        "Gunakan varietas jagung tahan penyakit."
+    ],
+    "Blight": [
+        "Gunakan fungisida berbahan aktif klorotalonil.",
+        "Hindari penyiraman berlebih.",
+        "Bersihkan sisa tanaman yang terinfeksi dari lahan."
+    ]
+}
 
 # =======================
 # FUNGSI PREPROCESS
@@ -65,12 +92,12 @@ def home_page():
     st.title("Aplikasi Deteksi Penyakit Daun Jagung")
     st.markdown("""
     Aplikasi ini digunakan untuk mendeteksi **penyakit pada daun jagung**
-    menggunakan **kecerdasan buatan (AI)** berbasis *Deep Learning*.
+    menggunakan teknologi **kecerdasan buatan (AI)** berbasis *Deep Learning*.
 
     ### Cara Penggunaan
     1. Buka tab **Kamera**
-    2. Ambil foto daun jagung
-    3. Lihat hasil prediksi penyakit
+    2. Ambil gambar daun jagung
+    3. Lihat hasil prediksi dan cara penanggulangan
 
     ### Kategori Penyakit
     - **Healthy** (Sehat)
@@ -105,6 +132,11 @@ def camera_page():
                 st.success(f"Kategori: **{label}**")
                 st.write(f"Probabilitas: **{confidence:.2%}**")
 
+                st.subheader("Cara Penanggulangan")
+                with st.expander("Klik untuk melihat penanggulangan"):
+                    for i, step in enumerate(TREATMENTS[label], 1):
+                        st.write(f"{i}. {step}")
+
 # =======================
 # HALAMAN TENTANG
 # =======================
@@ -114,7 +146,7 @@ def about_page():
     st.markdown("""
     Aplikasi **Deteksi Penyakit Daun Jagung** memanfaatkan teknologi
     *Convolutional Neural Network (CNN)* untuk mengklasifikasikan
-    kondisi daun jagung secara otomatis dari citra kamera.
+    kondisi daun jagung secara otomatis melalui citra kamera.
     """)
 
     st.header("Kelompok 10")
@@ -145,5 +177,4 @@ with tabs[0]:
 with tabs[1]:
     camera_page()
 
-with tabs[2]:
-    about_page()
+with tabs[2]()
