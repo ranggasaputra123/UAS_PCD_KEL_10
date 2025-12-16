@@ -126,7 +126,7 @@ def example_page():
 
     with col1:
         st.markdown('<div class="image-grid">', unsafe_allow_html=True)
-        st.image("Corn_Health (82).jpg", caption="Healthy", use_container_width=True)
+        st.image("Corn_Health (82).jpg", caption="Healthy", use_container_width=True, )
         st.image("Corn_Common_Rust (2).jpg", caption="Common Rust", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -142,7 +142,6 @@ def example_page():
 # =======================
 def about_page():
     st.title("Tentang Aplikasi")
-
     st.markdown("""
     Aplikasi ini dikembangkan untuk membantu  
     **deteksi dini penyakit daun jagung**.
