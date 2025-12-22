@@ -1,1 +1,1 @@
-Aplikasi : jagunggapp.streamlit.app
+Aplikasi :(jagunggapp.streamlit.app)
