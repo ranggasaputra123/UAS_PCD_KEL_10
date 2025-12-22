@@ -1,1 +1,1 @@
-Aplikasi :(jagunggapp.streamlit.app)
+Link Aplikasi :([jagunggapp.streamlit.app)](https://jagunggapp.streamlit.app/)
